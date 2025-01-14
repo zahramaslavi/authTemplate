@@ -43,10 +43,8 @@ userSchema.pre("save", async function (next) {
 
 userSchema.statics.checkEmailAndPassword = async function(email: string, password: string) {
   const usr = await this.findOne({email});
-  console.log("|||||||||||||||||||||", usr, email, password, usr.password)
   if (usr) {
     const auth: Boolean = await bcrypt.compare(password as string, usr.password);
-    console.log("|||||||||||||||||||||-------", auth)
     if (auth) {
       return usr;
     }

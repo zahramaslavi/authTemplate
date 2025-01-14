@@ -44,6 +44,10 @@ const TopAppBar = () => {
           {state.isAuthenticated && (
             <Button color="inherit" onClick={logout}>Logout</Button>
           )}
+
+          {state.isAuthenticated && (
+            <Button color="inherit"><Link to="/Users" style={{ color: "#FFF", textDecoration: "none" }}>Users</Link></Button>
+          )}
           
         </Toolbar>
       </AppBar>

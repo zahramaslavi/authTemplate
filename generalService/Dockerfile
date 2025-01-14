@@ -14,6 +14,6 @@ COPY ./ ./
 RUN yarn global add nodemon
 
 
-EXPOSE 3001
+EXPOSE 3002
 
 CMD ["yarn", "start"]

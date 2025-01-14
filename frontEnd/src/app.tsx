@@ -4,6 +4,7 @@ import { HashRouter as Router, Route, Routes } from 'react-router';
 import TopAppBar from './components/topAppBar';
 import Register from './components/register';
 import Login from './components/login';
+import Users from './components/users';
 import AuthError from './components/authError';
 import './app.css';
 import { AuthProvider } from './contexts/authContext';
@@ -40,6 +41,11 @@ function App() {
 
               <Route path="/register" element={
                 <Register></Register>
+              }>
+              </Route>
+
+              <Route path="/users" element={
+                <Users></Users>
               }>
               </Route>
             </Routes>

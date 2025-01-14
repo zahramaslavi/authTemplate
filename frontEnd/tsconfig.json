@@ -10,7 +10,7 @@
       "forceConsistentCasingInFileNames": true,  // Enforce consistent casing in imports
       "baseUrl": ".",                            // Base URL for relative imports
       "paths": {
-        "@/*": ["src/*"]                         // Setup alias for the src directory
+        "@/*": ["./src/*"]                         // Setup alias for the src directory
       }
     },
     "include": ["src/**/*"],                     // Include all files in src/

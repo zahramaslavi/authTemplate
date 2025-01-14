@@ -43,6 +43,10 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         httpOnly: true,
         maxAge: JWT_EXPIRE_MIN * 60 * 1000, 
       });
+      res.cookie('jwt_refresh', refreshToken, {
+        httpOnly: true,
+        maxAge: JWT_EXPIRE_DAY_REFRESH * 24 * 60 * 60 * 1000, 
+      });
       res.send({"success": {"user": usr}});
     } else {
       res.status(401).send({"error": {"message": "Incorrect username or password"}});
@@ -58,7 +62,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await User.findOne({email: req.body.email});
-    console.log(req.body, user)
 
     if (!user) {
       const user = new User(req.body);
@@ -83,9 +86,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
 export const refreshTok = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const refToken = req.body.refreshToken;
+    const refToken = req.cookies["jwt_refresh"];
     const verifyRes = jwt.verify(refToken, publicKey);
-    console.log("-------------------------------", verifyRes)
 
     if (verifyRes) {
       const usr = await User.findOne({refresh_token: refToken});
@@ -95,7 +97,7 @@ export const refreshTok = async (req: Request, res: Response, next: NextFunction
           algorithm: process.env.JWT_ALGORITHM as Algorithm,
           expiresIn: `${JWT_EXPIRE_MIN}m`
         };
-        
+
         const payload = {
           "id": usr.id,
           "email": usr.email
@@ -124,6 +126,7 @@ export const refreshTok = async (req: Request, res: Response, next: NextFunction
 export const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.clearCookie("jwt");
+    res.clearCookie("jwt_refresh");
 
     res.send({"success": {"message": "Successful logout"}});
   } catch (error) {

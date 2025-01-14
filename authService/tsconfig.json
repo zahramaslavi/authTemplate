@@ -11,7 +11,7 @@
     "resolveJsonModule": true,            // Allows importing JSON modules
     "typeRoots": ["./node_modules/@types"], // Look for types in node_modules/@types
     "paths": {
-      "@/*": ["src/*"]                         // Setup alias for the src directory
+      "@/*": ["./src/*"]                         // Setup alias for the src directory
     }
   },
   "include": ["src/**/*.ts", "src/tests/**/*.ts", "src/tests/index.test.js"],              // Include all .ts files in the src and tests folders

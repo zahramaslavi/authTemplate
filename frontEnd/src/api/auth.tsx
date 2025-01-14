@@ -43,3 +43,13 @@ export const logoutApi = async () => {
   }
 }
 
+export const refreshToken = async () => {
+  try {
+    const res = await authApiClient.post("/token/");
+    return res.data;
+  } catch(error: any) {
+    console.log("Failed to refres htoken: ", error);
+    throw new Error(error.response.data);
+  }
+}
+

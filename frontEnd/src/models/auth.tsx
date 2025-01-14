@@ -3,11 +3,14 @@ export interface AuthDataI {
   password?: string
 };
 
+
 export interface AuthInitStateI {
-  email: null | String,
+  email: null | string,
   isAuthenticated: boolean,
+  refresh_token: string | null,
   errorState: null | number,
-  errorMessage: null | String
+  errorMessage: null | String,
+  users: any[]
 }
 
 export interface AuthContextI {
@@ -15,6 +18,7 @@ export interface AuthContextI {
   reg: (authData: AuthDataI) => void,
   login: (authData: AuthDataI) => void,
   logout: () => void,
-  clearError: () => void
+  clearError: () => void,
+  getUsers: () => void
 }
 

@@ -1,14 +1,17 @@
 import { AuthInitStateI, AuthDataI, AuthContextI } from "@/models/auth";
 import { ActionI, ProviderProps } from "@/models/context";
 import { createContext, useContext, useReducer, useEffect } from "react"
-import { REGISTER, LOGIN, LOGOUT, ERROR_MESSAGE, registerAction, loginAction, logoutAction, errorMessageAction } from "./authAction";
-import { registerApi, loginApi, logoutApi } from "@/api/auth";
+import { REGISTER, LOGIN, LOGOUT, ERROR_MESSAGE, GET_USERS, registerAction, loginAction, logoutAction, errorMessageAction, getUsersAction } from "./authAction";
+import { registerApi, loginApi, logoutApi, refreshToken } from "@/api/auth";
+import { fetchUsers } from "@/api/general";
 
 const initialState: AuthInitStateI = {
   email: null,
   isAuthenticated: false,
+  refresh_token: null,
   errorState: null,
-  errorMessage: null
+  errorMessage: null,
+  users: []
 }
 
 const reducer = (state: AuthInitStateI ,action: ActionI) => {
@@ -21,6 +24,8 @@ const reducer = (state: AuthInitStateI ,action: ActionI) => {
       return {...state, email: null, isAuthenticated: false}
     case ERROR_MESSAGE:
       return {...state, errorMessage: action.payload.message}
+    case GET_USERS:
+      return {...state, users: action.payload.users}
     default:
       return state
   }
@@ -38,7 +43,16 @@ export const AuthProvider: React.FC<ProviderProps> = ({children}) => {
     if (userEmail && isAuthenticated) {
       dispatch(loginAction({email: userEmail}));
     }
+
+    if (isAuthenticated) {
+      refTokenRegularly();
+    }
   }, []);
+
+  const refTokenRegularly = () => {
+    refreshToken();
+    setTimeout(refTokenRegularly, 60000)
+  }
 
   const reg = async (authData: AuthDataI) => {
     try {
@@ -60,9 +74,11 @@ export const AuthProvider: React.FC<ProviderProps> = ({children}) => {
       if (res.success && res.success.user) {
         const user = res.success.user;
         const email = user.email;
+        const refTok = user.refresh_token;
         dispatch(loginAction({email}));
         localStorage.setItem("is_authenticated", JSON.stringify(true));
         localStorage.setItem("user_email", email);
+        localStorage.setItem("refresh_token", refTok);
       }
     } catch (error: any) {
       if (error.response?.data?.error?.message)
@@ -88,7 +104,16 @@ export const AuthProvider: React.FC<ProviderProps> = ({children}) => {
     dispatch(errorMessageAction({message: null}));
   }
 
-  return <AuthContext.Provider value={{state, login, logout, reg, clearError}}>{children}</AuthContext.Provider>
+  const getUsers = async () => { 
+    try {
+      const users = await fetchUsers();
+      dispatch(getUsersAction({users}));
+    } catch (error) {
+      console.log("Error while fetching users");
+    }
+  }
+
+  return <AuthContext.Provider value={{state, login, logout, reg, clearError, getUsers}}>{children}</AuthContext.Provider>
 }
 
 export const useAuthContext = () => {
