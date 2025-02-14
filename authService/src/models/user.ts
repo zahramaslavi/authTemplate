@@ -2,7 +2,7 @@ import mongoose, { Document, Model }  from "mongoose";
 import { isEmail } from "validator";
 import bcrypt from "bcrypt";
 
-interface IUser extends Document {
+export interface IUser extends Document {
   email: string;
   password: string;
   refresh_token?: string;

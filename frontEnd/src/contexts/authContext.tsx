@@ -2,7 +2,7 @@ import { AuthInitStateI, AuthDataI, AuthContextI } from "@/models/auth";
 import { ActionI, ProviderProps } from "@/models/context";
 import { createContext, useContext, useReducer, useEffect } from "react"
 import { REGISTER, LOGIN, LOGOUT, ERROR_MESSAGE, GET_USERS, registerAction, loginAction, logoutAction, errorMessageAction, getUsersAction } from "./authAction";
-import { registerApi, loginApi, logoutApi, refreshToken } from "@/api/auth";
+import { registerApi, loginApi, logoutApi, refreshToken, githubLoginCallbackApi } from "@/api/auth";
 import { fetchUsers } from "@/api/general";
 
 const initialState: AuthInitStateI = {
@@ -86,6 +86,24 @@ export const AuthProvider: React.FC<ProviderProps> = ({children}) => {
     }
   }
 
+  const githubCallback = async (code: string) => {
+    try {
+      const res = await githubLoginCallbackApi(code);
+      if (res.success && res.success.user) {
+        const user = res.success.user;
+        const email = user.username;
+        const refTok = user.refresh_token;
+        dispatch(loginAction({email}));
+        localStorage.setItem("is_authenticated", JSON.stringify(true));
+        localStorage.setItem("user_email", email);
+        localStorage.setItem("refresh_token", refTok);
+      }
+    } catch (error: any) {
+      if (error.response?.data?.error?.message)
+        dispatch(errorMessageAction({message: error.response.data.error.message}));
+    }
+  }
+
   const logout = async() => {
     try {
       const res = await logoutApi();
@@ -113,7 +131,7 @@ export const AuthProvider: React.FC<ProviderProps> = ({children}) => {
     }
   }
 
-  return <AuthContext.Provider value={{state, login, logout, reg, clearError, getUsers}}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{state, login, logout, reg, clearError, getUsers, githubCallback}}>{children}</AuthContext.Provider>
 }
 
 export const useAuthContext = () => {

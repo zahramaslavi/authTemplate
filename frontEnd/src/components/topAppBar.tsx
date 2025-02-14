@@ -33,7 +33,7 @@ const TopAppBar = () => {
             <Button color="inherit"><Link to="/Login" style={{ color: "#FFF", textDecoration: "none" }}>Login</Link></Button>
           )}
 
-          {!state.email && (
+          {!state.email && !state.isAuthenticated&& (
             <Button color="inherit"><Link to="/Register" style={{ color: "#FFF", textDecoration: "none" }}>Register</Link></Button>
           )}
 

@@ -19,6 +19,7 @@ export interface AuthContextI {
   login: (authData: AuthDataI) => void,
   logout: () => void,
   clearError: () => void,
-  getUsers: () => void
+  getUsers: () => void,
+  githubCallback: (code: string) => void
 }
 

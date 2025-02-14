@@ -53,3 +53,13 @@ export const refreshToken = async () => {
   }
 }
 
+export const githubLoginCallbackApi = async (code: string) => {
+  try {
+    const res = await authApiClient.get(`/auth/github/callback/${code}`);
+    return res.data;
+  } catch(error: any) {
+    console.log("Failed to login with github: ", error);
+    throw new Error(error.response.data);
+  }
+}
+
